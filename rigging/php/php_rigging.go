@@ -3,17 +3,17 @@ package php
 import (
 	"os"
 	"path/filepath"
-)
 
-const Platform = "PHP"
+	"github.com/alibaba/derrick/common"
+)
 
 type PHPRigging struct {
 }
 
-func (rig PHPRigging) Detect(workspace string) (bool, string) {
+func (rig PHPRigging) Detect(workspace string) (bool, common.LanguagePlatform) {
 	composer := filepath.Join(workspace, "composer.json")
 	if _, err := os.Stat(composer); err == nil {
-		return true, Platform
+		return true, common.PHP
 	}
 	return false, ""
 }

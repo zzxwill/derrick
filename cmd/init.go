@@ -40,7 +40,7 @@ func Init() *cobra.Command {
 }
 
 type SuitableRiggings struct {
-	Platform       string
+	Platform       common.LanguagePlatform
 	ExtensionPoint core.ExtensionPoint
 }
 
@@ -57,38 +57,39 @@ func execute(workspace, dockerImage string) error {
 	}
 	suitableRiggings := detect(workspace)
 	riggingNo := len(suitableRiggings)
-	if riggingNo == 0 {
+	switch riggingNo {
+	case 0:
+
 		fmt.Println("Failed to detect your application's platform.\nMaybe you can upgrade Derrick to get more platforms supported.")
 		return nil
-	} else if riggingNo > 1 {
+	case 1:
+		suitableRigging := suitableRiggings[0]
+		return storeDetections(suitableRigging)
+	case 2:
+		var suitableRigging *SuitableRiggings
+		var isSpringBootFlag = true
+		for _, rig := range suitableRiggings {
+			switch rig.Platform {
+			case common.JavaBasic:
+			case common.JavaSpringBoot:
+				suitableRigging = rig
+			default:
+				isSpringBootFlag = false
+
+			}
+		}
+		if isSpringBootFlag {
+			return storeDetections(suitableRigging)
+		}
+		fmt.Println("More than one rigging can handle the application.")
+		return nil
+
+	default:
 		// TODO(zzxwill) ask users to choose from one of them
 		fmt.Println("More than one rigging can handle the application.")
 		return nil
 	}
 
-	suitableRigging := suitableRiggings[0]
-	rig := suitableRigging.ExtensionPoint.Rigging
-	detectedContext, err := rig.Compile(dockerImage)
-	if err != nil {
-		return err
-	}
-	if err := renderTemplates(rig, detectedContext, workspace); err != nil {
-		return err
-	}
-	if err != nil {
-		return err
-	}
-	fmt.Printf("Successfully detected your platform is %s and compiled it successfully.\n", suitableRigging.Platform)
-
-	// write configuration context to a file located in the application folder
-	data, err := json.Marshal(detectedContext)
-	if err != nil {
-		return err
-	}
-	if err := ioutil.WriteFile(filepath.Join(workspace, common.DerrickApplicationConf), data, 0750); err != nil {
-		return err
-	}
-	return nil
 }
 
 func detect(projectPath string) []*SuitableRiggings {
@@ -166,4 +167,29 @@ func renderTemplate(templateDir, templateFile string, detectedContext map[string
 		return "", err
 	}
 	return wr.String(), nil
+}
+
+func storeDetections(suitableRigging *SuitableRiggings) error {
+	rig := suitableRigging.ExtensionPoint.Rigging
+	detectedContext, err := rig.Compile(dockerImage)
+	if err != nil {
+		return err
+	}
+	if err := renderTemplates(rig, detectedContext, workspace); err != nil {
+		return err
+	}
+	if err != nil {
+		return err
+	}
+	fmt.Printf("Successfully detected your platform is [%s] and compiled it successfully.\n", suitableRigging.Platform)
+
+	// write configuration context to a file located in the application folder
+	data, err := json.Marshal(detectedContext)
+	if err != nil {
+		return err
+	}
+	if err := ioutil.WriteFile(filepath.Join(workspace, common.DerrickApplicationConf), data, 0750); err != nil {
+		return err
+	}
+	return nil
 }

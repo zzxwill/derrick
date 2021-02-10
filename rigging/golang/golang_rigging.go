@@ -12,14 +12,10 @@ import (
 	platform "github.com/alibaba/derrick/detectors/platform/golang"
 )
 
-const (
-	Platform = "Golang"
-)
-
 type GolangRigging struct {
 }
 
-func (rig GolangRigging) Detect(workspace string) (bool, string) {
+func (rig GolangRigging) Detect(workspace string) (bool, common.LanguagePlatform) {
 	var detected bool
 	err := filepath.Walk(workspace, func(workspace string, info os.FileInfo, err error) error {
 		if strings.HasSuffix(info.Name(), ".go") {
@@ -29,7 +25,7 @@ func (rig GolangRigging) Detect(workspace string) (bool, string) {
 		return nil
 	})
 	if err == io.EOF && detected {
-		return true, Platform
+		return true, common.Golang
 	}
 	return false, ""
 }

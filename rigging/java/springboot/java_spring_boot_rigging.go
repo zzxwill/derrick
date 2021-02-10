@@ -1,26 +1,38 @@
-package java
+package springboot
 
 import (
+	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/alibaba/derrick/common"
 	"github.com/alibaba/derrick/detectors/general"
 	image "github.com/alibaba/derrick/detectors/image/java"
 )
 
-type JavaBasicRigging struct {
+type SpringBootRigging struct {
 }
 
-func (rig JavaBasicRigging) Detect(workspace string) (bool, common.LanguagePlatform) {
+const Platform = "Java"
+
+func (rig SpringBootRigging) Detect(workspace string) (bool, common.LanguagePlatform) {
+
 	pom := filepath.Join(workspace, "pom.xml")
 	if _, err := os.Stat(pom); err == nil {
-		return true, common.JavaBasic
+		data, err := ioutil.ReadFile(pom)
+		if err != nil {
+			return true, Platform
+		}
+		if strings.Contains(string(data), "org.springframework.boot") {
+			return true, common.JavaSpringBoot
+		}
+		return true, Platform
 	}
 	return false, ""
 }
 
-func (rig JavaBasicRigging) Compile(dockerImage string) (map[string]string, error) {
+func (rig SpringBootRigging) Compile(dockerImage string) (map[string]string, error) {
 	dr := &common.DetectorReport{
 		Nodes: map[string]common.DetectorReport{},
 		Store: map[string]string{},

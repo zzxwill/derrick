@@ -4,26 +4,14 @@ import (
 	"github.com/alibaba/derrick/common"
 	"github.com/alibaba/derrick/rigging/golang"
 	"github.com/alibaba/derrick/rigging/java"
+	"github.com/alibaba/derrick/rigging/java/springboot"
 	"github.com/alibaba/derrick/rigging/nodejs"
 	"github.com/alibaba/derrick/rigging/php"
 	"github.com/alibaba/derrick/rigging/python"
 )
 
-//type Rigging interface {
-//	GetTemplateDir() string
-//	GetTemplateName() string
-//}
-
-//func GetTemplateDir(platform interface{}) string {
-//	return reflect.TypeOf(platform).PkgPath()
-//}
-//
-//func GetTemplateName(platform interface{}) interface{} {
-//	return reflect.TypeOf(platform).Name()
-//}
-
 func LoadRiggings() []ExtensionPoint {
-	riggings := []common.Rigging{golang.GolangRigging{}, java.JavaRigging{}, nodejs.NodeJSRigging{}, php.PHPRigging{}, python.PythonRigging{}}
+	riggings := []common.Rigging{golang.GolangRigging{}, java.JavaBasicRigging{}, springboot.SpringBootRigging{}, nodejs.NodeJSRigging{}, php.PHPRigging{}, python.PythonRigging{}}
 	extensionPoints := make([]ExtensionPoint, len(riggings))
 	for i, rig := range riggings {
 		extensionPoints[i] = Register(rig)

@@ -33,8 +33,18 @@ You can use Derrick to migrate your project simply.
 const (
 	Meta                 = "Meta"
 	Dockerfile           = "Dockerfile"
-	DockerCompose        = "DockerCompose"
 	KubernetesDeployment = "kubernetes-deployment.yaml"
+)
+
+type LanguagePlatform string
+
+const (
+	JavaBasic      LanguagePlatform = "Java"
+	JavaSpringBoot LanguagePlatform = "Java Spring Boot"
+	Golang         LanguagePlatform = "Golang"
+	NodeJS         LanguagePlatform = "NodeJS"
+	PHP            LanguagePlatform = "PHP"
+	Python         LanguagePlatform = "Python"
 )
 
 // GetDerrickHome return vela home dir

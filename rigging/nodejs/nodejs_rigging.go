@@ -10,15 +10,13 @@ import (
 	platform "github.com/alibaba/derrick/detectors/platform/golang"
 )
 
-const Platform = "NodeJS"
-
 type NodeJSRigging struct {
 }
 
-func (rig NodeJSRigging) Detect(workspace string) (bool, string) {
+func (rig NodeJSRigging) Detect(workspace string) (bool, common.LanguagePlatform) {
 	packageJSON := filepath.Join(workspace, "package.json")
 	if _, err := os.Stat(packageJSON); err == nil {
-		return true, Platform
+		return true, common.NodeJS
 	}
 	return false, ""
 }

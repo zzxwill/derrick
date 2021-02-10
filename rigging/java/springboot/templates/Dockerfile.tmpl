@@ -1,0 +1,7 @@
+FROM cloudfoundry/cnb:0.1.62-base
+WORKDIR /app
+COPY . /app
+RUN mvnw spring-boot:build-image
+
+EXPOSE 8080
+CMD ["catalina.sh", "run"]
