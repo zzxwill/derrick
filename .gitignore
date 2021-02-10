@@ -16,3 +16,8 @@ bin/
 # vendor/
 .DS_Store
 .idea/
+
+Dockerfile
+derrick_conf
+docker-compose.yml
+kubernetes-deployment.yaml

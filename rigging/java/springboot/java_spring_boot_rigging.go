@@ -14,20 +14,16 @@ import (
 type SpringBootRigging struct {
 }
 
-const Platform = "Java"
-
 func (rig SpringBootRigging) Detect(workspace string) (bool, common.LanguagePlatform) {
-
 	pom := filepath.Join(workspace, "pom.xml")
 	if _, err := os.Stat(pom); err == nil {
 		data, err := ioutil.ReadFile(pom)
 		if err != nil {
-			return true, Platform
+			return false, ""
 		}
 		if strings.Contains(string(data), "org.springframework.boot") {
 			return true, common.JavaSpringBoot
 		}
-		return true, Platform
 	}
 	return false, ""
 }
